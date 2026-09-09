@@ -13,7 +13,7 @@
 
     .send-button {
       background-color: rgb(25, 135, 84);
-      ;
+
       color: white;
       padding: 12px 20px;
       margin-left: 10px;
@@ -80,6 +80,18 @@
       overflow: scroll;
       scrollbar-width: none;
     }
+
+    .welcome-message {
+      color: rgb(120, 120, 120);
+      text-align: center;
+      margin-top: 40px;
+      font-size: 18px;
+    }
+
+    .loading-spinner {
+      height: 40px;
+      margin: -15px;
+    }
   </style>
 </head>
 
@@ -93,6 +105,17 @@
 
   <script src="https://unpkg.com/supersimpledev/babel.js"></script>
   <script type="text/babel">
+    function useAutoScroll(dependencies) {
+      const containerRef = React.useRef(null);
+      React.useEffect(() => {
+        const containerElem = containerRef.current;
+        if (containerElem) {
+          containerElem.scrollTop = containerElem.scrollHeight;
+        }
+
+      }, dependencies);
+      return containerRef;
+    }
     function ChatInput({ chatMessages, setChatMessages }) {
       const [inputText, setInputText] = React.useState('',);
       const [isLoading, setIsLoading] = React.useState(false);
@@ -119,7 +142,7 @@
         setChatMessages([
           ...newChatMessages,
           {
-            message: "Loading...",
+            message: <img src="images/loading-spinner.gif" className="loading-spinner" />,
             sender: "robot",
             id: crypto.randomUUID()
           }
@@ -187,28 +210,25 @@
       );
     }
     function ChatMessages({ chatMessages }) {
-      const chatMessagesRef = React.useRef(null);
-      React.useEffect(() => {
-        const containerElem = chatMessagesRef.current;
-        if (containerElem) {
-          containerElem.scrollTop = containerElem.scrollHeight;
-        }
-
-      }, [chatMessages]);
+      const chatMessagesRef = useAutoScroll([chatMessages]);
 
       return (
         <div className="chat-messages-container" ref={chatMessagesRef}>
 
           {
-            chatMessages.map((chatMessage) => {
-              return (
-                <ChatMessage
-                  message={chatMessage.message}
-                  sender={chatMessage.sender}
-                  key={chatMessage.id}
-                />
-              );
-            })
+            chatMessages.length === 0
+              ? <p className="welcome-message">
+                Welcome to the Chatbot project!send a message using the textbox below.
+              </p>
+              : chatMessages.map((chatMessage) => {
+                return (
+                  <ChatMessage
+                    message={chatMessage.message}
+                    sender={chatMessage.sender}
+                    key={chatMessage.id}
+                  />
+                );
+              })
           }
 
         </div>
@@ -217,26 +237,7 @@
     function App() {
 
       const [chatMessages, setChatMessages] = React.useState(
-        [{
-          message: "hello Chatbot",
-          sender: "user",
-          id: "id1"
-        },
-        {
-          message: "Hello! How can I help you?",
-          sender: "robot",
-          id: "id2"
-        },
-        {
-          message: "what is the date",
-          sender: "user",
-          id: "id3"
-        },
-        {
-          message: "Today is September 2",
-          sender: "robot",
-          id: "id4"
-        }]
+        []
       );
       //const chatMessages = array[0];
       //const setChatMessages = array[1];
