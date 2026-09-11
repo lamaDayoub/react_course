@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Chatbot } from 'supersimpledev'
 import LoaddingSpinnerImg from '../assets/loading-spinner.gif'
 import './ChatInput.css';
+import dayjs from 'dayjs';
 
 export function ChatInput({ chatMessages, setChatMessages }) {
     const [inputText, setInputText] = useState('',);
@@ -22,7 +23,8 @@ export function ChatInput({ chatMessages, setChatMessages }) {
             {
                 message: inputText,
                 sender: "user",
-                id: crypto.randomUUID()
+                id: crypto.randomUUID(),
+                time: dayjs().valueOf()
             }
         ];
 
@@ -41,7 +43,8 @@ export function ChatInput({ chatMessages, setChatMessages }) {
             {
                 message: response,
                 sender: "robot",
-                id: crypto.randomUUID()
+                id: crypto.randomUUID(),
+                time: dayjs().valueOf()
             }
         ]);
         setIsLoading(false);
@@ -55,6 +58,9 @@ export function ChatInput({ chatMessages, setChatMessages }) {
 
             setInputText('');
         }
+    }
+    function removeMessages() {
+        setChatMessages([]);
     }
     return (
         <div className="chat-input-container">
@@ -70,6 +76,13 @@ export function ChatInput({ chatMessages, setChatMessages }) {
                 onClick={sendMessage}
                 className="send-button"
             >Send</button>
+            <button
+                onClick={removeMessages}
+                className="clear-button"
+            >
+                Clear
+            </button>
+
         </div>
 
     );
